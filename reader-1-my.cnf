@@ -1,0 +1,16 @@
+[client]
+default-character-set = utf8mb4
+
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_general_ci
+innodb-use-native-aio = 0
+gtid-mode = on
+enforce-gtid-consistency = on
+read_only
+
+log_bin = /var/log/mysql/mysql-bin
+server_id = 1001
+
+[mysql]
+prompt = '(reader-1) [\\d] > '

@@ -1,22 +1,52 @@
 version: "3"
 services:
-  db:
-    platform: 'linux/amd64'
-    build:
-      context: .
+  writer:
+    platform: "linux/amd64"
+    image: mysql:5.7
     volumes:
-      - ./master/conf:/conf
-      - ./setup.sh:/usr/local/bin/setup.sh
-      - master_log:/var/log/master
-      - master_db:/var/lib/mysql
+      - ./writer-my.cnf:/etc/mysql/conf.d/writer-my.cnf
+      - ./writer-init.sh:/docker-entrypoint-initdb.d/writer-init.sh
+      - writer_log:/var/log/mysql
+      - writer_data:/var/lib/mysql
+    env_file:
+      - .env
     environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_WRITER_ROOT_PASSWORD}"
+      MYSQL_DATABASE: testdb
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-      mysql_root_password: master
-    # volumes:
-    # restart: always
+  reader-1:
+    platform: "linux/amd64"
+    image: mysql:5.7
+    volumes:
+      - ./reader-1-my.cnf:/etc/mysql/conf.d/reader-my.cnf
+      - ./reader-init.sh:/docker-entrypoint-initdb.d/reader-init.sh
+      - reader_1_log:/var/log/mysql
+      - reader_1_data:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_READER_ROOT_PASSWORD}"
+    ports:
+      - 3331:3306
+  reader-2:
+    platform: "linux/amd64"
+    image: mysql:5.7
+    volumes:
+      - ./reader-2-my.cnf:/etc/mysql/conf.d/reader-my.cnf
+      - ./reader-init.sh:/docker-entrypoint-initdb.d/reader-init.sh
+      - reader_2_log:/var/log/mysql
+      - reader_2_data:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_READER_ROOT_PASSWORD}"
+    ports:
+      - 3332:3306
 volumes:
-  master_db: {}
-  master_log: {}
-  slave_db: {}
-  slave_log: {}
+  writer_data: {}
+  writer_log: {}
+  reader_1_data: {}
+  reader_1_log: {}
+  reader_2_data: {}
+  reader_2_log: {}
