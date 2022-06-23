@@ -1,0 +1,22 @@
+version: "3"
+services:
+  db:
+    platform: 'linux/amd64'
+    build:
+      context: .
+    volumes:
+      - ./master/conf:/conf
+      - ./setup.sh:/usr/local/bin/setup.sh
+      - master_log:/var/log/master
+      - master_db:/var/lib/mysql
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      mysql_root_password: master
+    # volumes:
+    # restart: always
+volumes:
+  master_db: {}
+  master_log: {}
+  slave_db: {}
+  slave_log: {}
